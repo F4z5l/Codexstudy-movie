@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Player — CODEXSTUDYS</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#080808">
+<link rel="icon" href="assets/icons/icon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="assets/icons/icon-180.png">
+<link rel="stylesheet" href="css/style.css">
+<style>
+  body{padding-top:0;}
+  .player-nav{
+    position:fixed;top:0;left:0;right:0;z-index:100;padding:16px 24px;padding-top:calc(16px + var(--safe-t));
+    display:flex;align-items:center;gap:14px;
+    background:linear-gradient(to bottom, rgba(0,0,0,.75), transparent);
+  }
+  .player-nav .brand-word{font-size:16px;}
+  #player-stage{position:relative;width:100%;aspect-ratio:16/9;background:#000;overflow:hidden;}
+  #video{width:100%;height:100%;object-fit:contain;background:#000;}
+  .big-play{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    background:rgba(0,0,0,.15);transition:opacity .2s ease;cursor:pointer;
+  }
+  .big-play.hidden{opacity:0;pointer-events:none;}
+  .big-play .play-circle{width:74px;height:74px;background:rgba(255,255,255,.9);}
+  .big-play svg{width:28px;height:28px;}
+  .demo-badge{
+    position:absolute;top:14px;right:14px;z-index:5;font-size:10.5px;font-weight:800;letter-spacing:.5px;
+    padding:4px 9px;border-radius:5px;background:rgba(0,0,0,.6);color:var(--accent);border:1px solid rgba(230,185,77,.35);
+  }
+  .controls-bar{
+    position:absolute;left:0;right:0;bottom:0;z-index:6;padding:10px 18px 16px;
+    background:linear-gradient(to top, rgba(0,0,0,.85), transparent);
+    opacity:1;transition:opacity .25s ease;
+  }
+  #seek{
+    -webkit-appearance:none;width:100%;height:4px;border-radius:3px;margin-bottom:12px;
+    background:linear-gradient(to right, var(--accent) var(--pct,0%), rgba(255,255,255,.25) var(--pct,0%));
+    cursor:pointer;
+  }
+  #seek::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:var(--accent);}
+  #seek::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:var(--accent);border:none;}
+  .controls-row{display:flex;align-items:center;gap:14px;}
+  .controls-row .icon-btn{width:34px;height:34px;}
+  .controls-row .icon-btn svg{width:19px;height:19px;stroke:#fff;fill:none;}
+  .time-display{font-size:12.5px;color:var(--text-dim);white-space:nowrap;}
+  .spacer{flex:1;}
+  .select-wrap{position:relative;}
+  .select-btn{
+    display:flex;align-items:center;gap:6px;font-size:12.5px;padding:7px 11px;
+    border-radius:var(--radius-s);background:rgba(255,255,255,.08);color:var(--text);
+  }
+  .select-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;}
+  .select-menu{
+    position:absolute;bottom:42px;right:0;min-width:130px;background:var(--surface-2);
+    border:1px solid var(--border);border-radius:var(--radius-m);padding:6px;
+    opacity:0;visibility:hidden;transform:translateY(6px);transition:all .18s ease;box-shadow:var(--shadow-pop);
+  }
+  .select-menu.open{opacity:1;visibility:visible;transform:translateY(0);}
+  .select-menu [data-opt]{padding:8px 10px;border-radius:6px;font-size:12.5px;color:var(--text-dim);}
+  .select-menu [data-opt]:hover{background:var(--surface-hover);color:var(--text);}
+  .select-menu [data-opt].sel{color:var(--accent);}
+  .info-wrap{padding:28px 48px 60px;max-width:900px;}
+  @media (max-width:640px){.info-wrap{padding:20px 16px 40px;}}
+  #episode-section{margin-top:26px;}
+  .ep-row.active-ep{background:var(--surface-hover);}
+  .ep-row.active-ep .ep-title{color:var(--accent);}
+  .now-playing{font-size:13px;color:var(--text-mute);margin-bottom:4px;}
+  @media (max-width:640px){.controls-row{gap:8px;}.time-display{font-size:11px;}.select-btn span{display:none;}}
+</style>
+</head>
+<body id="player-app">
+
+<div class="player-nav">
+  <button class="icon-btn" id="back-home" aria-label="Back">
+    <svg viewBox="0 0 24 24" style="stroke:#fff;fill:none;stroke-width:2;"><path d="M15 18l-6-6 6-6"/></svg>
+  </button>
+  <span class="brand-word">CODEX<b style="color:var(--accent);">STUDYS</b></span>
+  <div style="flex:1;"></div>
+  <button class="icon-btn" data-install-btn aria-label="Install app" title="Install App">
+    <svg viewBox="0 0 24 24" style="stroke:#fff;fill:none;stroke-width:2;"><path d="M12 3v12m0 0l-4-4m4 4l4-4"/><path d="M4 17v3a1 1 0 001 1h14a1 1 0 001-1v-3"/></svg>
+  </button>
+</div>
+
+<div id="player-stage">
+  <span class="demo-badge">Demo Preview</span>
+  <video id="video" playsinline preload="metadata"></video>
+  <div class="big-play" id="big-play">
+    <div class="play-circle" style="width:74px;height:74px;border-radius:50%;background:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center;">
+      <svg viewBox="0 0 24 24" style="width:28px;height:28px;fill:#0a0a0a;margin-left:3px;"><path d="M6 4l14 8-14 8V4z"/></svg>
+    </div>
+  </div>
+  <div class="controls-bar">
+    <input type="range" id="seek" min="0" max="100" value="0" step="0.1">
+    <div class="controls-row">
+      <button class="icon-btn" id="ctrl-play" aria-label="Play/Pause"><svg viewBox="0 0 24 24"><path d="M6 4l14 8-14 8V4z"/></svg></button>
+      <button class="icon-btn" id="ctrl-mute" aria-label="Mute"><svg viewBox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 010 7"/></svg></button>
+      <span class="time-display"><span id="cur-time">0:00</span> / <span id="dur-time">0:00</span></span>
+      <div class="spacer"></div>
+      <span id="now-playing-ep" class="time-display" style="display:none;"></span>
+      <div class="select-wrap">
+        <button class="select-btn" id="quality-btn"><span>Auto</span><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+        <div class="select-menu" id="quality-menu">
+          <div data-opt="Auto" class="sel">Auto</div>
+          <div data-opt="1080p">1080p</div>
+          <div data-opt="720p">720p</div>
+          <div data-opt="480p">480p</div>
+        </div>
+      </div>
+      <div class="select-wrap">
+        <button class="select-btn" id="lang-btn"><span>English</span><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+        <div class="select-menu" id="lang-menu">
+          <div data-opt="English" class="sel">English</div>
+          <div data-opt="Hindi">Hindi</div>
+          <div data-opt="Tamil">Tamil</div>
+          <div data-opt="Telugu">Telugu</div>
+        </div>
+      </div>
+      <button class="icon-btn" id="ctrl-fullscreen" aria-label="Fullscreen"><svg viewBox="0 0 24 24"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg></button>
+    </div>
+  </div>
+</div>
+
+<div class="info-wrap">
+  <h1 class="modal-title" id="player-title" style="margin-bottom:8px;"></h1>
+  <div id="episode-section" style="display:none;margin-top:0;margin-bottom:14px;">
+    <div class="now-playing" id="ep-label">Now Playing</div>
+  </div>
+  <div class="modal-meta" id="player-meta"></div>
+  <p class="modal-desc" id="player-desc"></p>
+  <div class="modal-actions">
+    <button class="btn btn-ghost" id="player-mylist">
+      <svg viewBox="0 0 24 24" style="width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:2;"><path d="M12 5v14M5 12h14"/></svg>
+      <span>Add to My List</span>
+    </button>
+  </div>
+
+  <div class="modal-episodes" id="episode-section2" style="border-top:1px solid var(--border);padding-top:18px;margin-top:24px;display:none;" data-episodes>
+    <h3 class="section-title" style="font-size:15px;margin-bottom:10px;">Episodes</h3>
+    <div id="episode-list"></div>
+  </div>
+</div>
+
+<script src="js/movies.js"></script>
+<script src="js/player.js"></script>
+<script src="js/install.js"></script>
+<script>
+  // show episode block wrapper when series
+  document.addEventListener("DOMContentLoaded", () => {
+    const id = new URLSearchParams(location.search).get("id") || "4";
+    const m = findMovie(id);
+    if (m && m.type === "series") {
+      document.getElementById("episode-section2").style.display = "";
+      document.getElementById("now-playing-ep").style.display = "";
+    }
+  });
+</script>
+</body>
+</html>

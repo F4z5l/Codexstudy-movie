@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CODEXSTUDYS — Movies &amp; Series</title>
+<meta name="description" content="CODEXSTUDYS — premium movie and series streaming, demo build.">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#080808">
+<link rel="icon" href="assets/icons/icon-32.png" sizes="32x32">
+<link rel="icon" href="assets/icons/icon-192.png" sizes="192x192">
+<link rel="apple-touch-icon" href="assets/icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="CodexStudys">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ============ NAVBAR ============ -->
+<nav class="navbar" id="navbar">
+  <div class="nav-inner">
+    <div class="brand">
+      <img class="brand-mark" src="assets/logo.png" alt="CODEXSTUDYS logo">
+      <span class="brand-word">CODEX<b>STUDYS</b></span>
+    </div>
+    <div class="nav-links">
+      <a href="#" data-nav="home" class="active">Home</a>
+      <a href="#" data-nav="movies">Movies</a>
+      <a href="#" data-nav="series">Series</a>
+      <a href="#" data-nav="genres">Genres</a>
+      <a href="#" data-nav="latest">Latest</a>
+      <a href="#" data-nav="mylist">My List</a>
+    </div>
+    <div class="nav-actions">
+      <button class="btn btn-ghost btn-sm install-btn" data-install-btn aria-label="Install app">
+        <svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4"/><path d="M4 17v3a1 1 0 001 1h14a1 1 0 001-1v-3"/></svg>
+        <span data-install-label>Install App</span>
+      </button>
+      <button class="icon-btn" id="search-btn" aria-label="Search">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      </button>
+      <button class="icon-btn" aria-label="Notifications">
+        <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg>
+      </button>
+      <div class="dropdown" id="profile-dropdown">
+        <div class="avatar">C</div>
+        <div class="dropdown-menu">
+          <button>Profile</button>
+          <button data-nav="mylist">My List</button>
+          <button>Settings</button>
+          <button>Sign out (demo)</button>
+        </div>
+      </div>
+      <button class="icon-btn hamburger" id="hamburger-btn" aria-label="Menu">
+        <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- ============ MOBILE MENU ============ -->
+<div class="mobile-menu" id="mobile-menu">
+  <div class="mobile-menu-panel">
+    <button class="icon-btn mobile-menu-close" id="mobile-menu-close" aria-label="Close menu">
+      <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+    <a href="#" data-nav="home" class="active">Home</a>
+    <a href="#" data-nav="movies">Movies</a>
+    <a href="#" data-nav="series">Series</a>
+    <a href="#" data-nav="genres">Genres</a>
+    <a href="#" data-nav="latest">Latest</a>
+    <a href="#" data-nav="mylist">My List</a>
+    <button class="btn btn-primary btn-sm" data-install-btn style="margin-top:16px;justify-content:center;">
+      <svg viewBox="0 0 24 24" style="width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:2;"><path d="M12 3v12m0 0l-4-4m4 4l4-4"/><path d="M4 17v3a1 1 0 001 1h14a1 1 0 001-1v-3"/></svg>
+      <span data-install-label>Install App</span>
+    </button>
+  </div>
+</div>
+
+<!-- ============ BOTTOM NAV (mobile) ============ -->
+<div class="bottom-nav">
+  <div class="bottom-nav-inner">
+    <a href="#" data-nav="home" class="active"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Home</a>
+    <a href="#" id="bottom-search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>Search</a>
+    <a href="#" data-nav="mylist"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>My List</a>
+    <a href="#" data-nav="genres"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Genres</a>
+  </div>
+</div>
+
+<!-- ============ HOME VIEW ============ -->
+<main>
+  <div class="view active" id="home-view">
+    <section class="hero" id="hero"></section>
+    <div id="home-rows"></div>
+    <footer class="footer">
+      <div class="f-brand">CODEXSTUDYS</div>
+      <p>Demo build — all titles, artwork and video shown are original placeholder content for preview purposes only.</p>
+    </footer>
+  </div>
+
+  <div class="view" id="movies-view">
+    <h1 class="view-title">Movies</h1>
+    <div class="filter-bar" id="movies-filter"></div>
+    <div class="grid" id="movies-grid"></div>
+  </div>
+
+  <div class="view" id="series-view">
+    <h1 class="view-title">Series</h1>
+    <div class="grid" id="series-grid"></div>
+  </div>
+
+  <div class="view" id="genres-view">
+    <h1 class="view-title">Genres</h1>
+    <div class="genre-grid" id="genres-grid"></div>
+  </div>
+
+  <div class="view" id="latest-view">
+    <h1 class="view-title">Latest Releases</h1>
+    <div class="grid" id="latest-grid"></div>
+  </div>
+
+  <div class="view" id="mylist-view">
+    <h1 class="view-title">My List</h1>
+    <div class="grid" id="mylist-grid"></div>
+  </div>
+</main>
+
+<!-- ============ SEARCH OVERLAY ============ -->
+<div class="search-overlay" id="search-overlay">
+  <div class="search-head">
+    <div class="search-input-wrap">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <input id="search-input" type="text" placeholder="Search movies, series, genres..." autocomplete="off">
+    </div>
+    <button class="icon-btn search-close" id="search-close" aria-label="Close search">
+      <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <div class="container search-results" id="search-results"></div>
+</div>
+
+<!-- ============ DETAILS MODAL ============ -->
+<div class="modal-backdrop" id="modal-backdrop"></div>
+
+<script src="js/movies.js"></script>
+<script src="js/app.js"></script>
+<script src="js/install.js"></script>
+<script>
+  document.getElementById("bottom-search").addEventListener("click", (e) => {
+    e.preventDefault();
+    document.getElementById("search-btn").click();
+  });
+</script>
+</body>
+</html>
